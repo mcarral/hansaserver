@@ -1,0 +1,105 @@
+#!/bin/sh
+#
+# Startup script for HansaServer
+#
+# chkconfig: 345 99 01
+# description: HansaServer process
+# processname: hansaserver
+#
+
+programa=/home/HANSA/Plastiflex/Ver41-0522-070910
+
+echo_success(){
+  printf "$(tput setaf 2)%155s$(tput sgr0)\n" "[OK]"
+}
+echo_failure(){
+  printf "$(tput setaf 1)%155s$(tput sgr0)\n" "[FAILED]"
+}
+
+startup(){
+  #screen $programa/hansa-server
+  nohup $programa/hansa-server >$programa/nohup.out 2>&1 &
+}
+
+getpid(){
+  if [ -f "$programa"/hansa.pid ]; then
+    read PID < $programa/hansa.pid
+  else
+    PID=""
+  fi
+
+  echo "$PID"
+}
+deletepid(){
+ if [ -f "$programa"/hansa.pid ]; then
+   rm -rf $programa/hansa.pid
+ fi
+}
+
+start(){
+ echo -n $"[...] Starting hansaserver: \n"
+ PIDHANSA=$(getpid)
+ if [ ${#PIDHANSA} != "0" ]; then
+   echo_failure
+   echo -n $"Error el servicio ya se encuentra corriendo \n"
+ else
+   startup
+   sleep 10
+   PIDHANSA=$(getpid)
+   echo_success
+   echo -n $"Servicio iniciado: $PIDHANSA \n"
+ fi
+}
+ 
+stop(){
+ echo -n $"[...] Stopping hansaserver: \n"
+ PIDHANSA=$(getpid)
+ if [ ${#PIDHANSA} != "0" ]; then
+    kill $PIDHANSA
+    deletepid
+    echo_success
+ else
+    echo_failure
+    echo -n $"Error hansaserver alredy stopped \n"
+ fi
+}
+ 
+restart(){
+ stop
+ sleep 10
+ start
+}
+
+status(){
+ PIDHANSA=$(getpid)
+ if [ ${#PIDHANSA} != "0" ]; then
+   echo_success
+   echo $"HansaServer is running (pid $PIDHANSA)";
+ else
+   echo_failure
+   echo $"HansaServer is NOT running"
+ fi
+}
+
+# Dependiento del parametro que se le pase
+#start - stop - restart ejecuta la funcióorrespondiente.
+#echo "param1 $1 -> param2 $2 -> param3 $3"
+case "$1" in
+start)
+ start
+ ;;
+stop)
+ stop
+ ;;
+restart)
+ restart
+ ;;
+status)
+ status
+ ;;
+*)
+ echo $"Usar: $0 {start|stop|restart|status} \n"
+ exit 1
+esac
+ 
+exit 0
