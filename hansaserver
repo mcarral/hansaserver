@@ -7,7 +7,7 @@
 # processname: hansaserver
 #
 
-programa=/home/HANSA/Plastiflex/Ver41-0522-070910
+programa=urlhansaprogram
 
 echo_success(){
   printf "$(tput setaf 2)%155s$(tput sgr0)\n" "[OK]"
@@ -18,7 +18,7 @@ echo_failure(){
 
 startup(){
   #screen $programa/hansa-server
-  nohup $programa/hansa-server >$programa/nohup.out 2>&1 &
+  nohup $programa/hansa-server --port porthansaprogram >$programa/nohup.out 2>&1 &
 }
 
 getpid(){
