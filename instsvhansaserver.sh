@@ -37,6 +37,9 @@ if [ -f $urlscript/hansaserver ]; then
     echo -n $"El directorio ingresado no existe. Ingrese nuevamente:\n"
     read urlhansa
   done
+  while [ ! -f $urlhansa/hansa-server ]; do
+    echo -n $"No se encuentra el ejecutable hansa-server en $urlhansa/hansa-server \n"
+  done
   namereplace="urlhansaprogram"
   sed -e 's@'"$namereplace"'@'"$urlhansa"'@g' $urlscript/hansaserver > $urlscript/hansaserver2
   mv -f $urlscript/hansaserver2 $urlscript/hansaserver

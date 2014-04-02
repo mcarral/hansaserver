@@ -17,6 +17,7 @@ echo_failure(){
 }
 
 startup(){
+  chmod +x $programa/hansa-server
   #screen $programa/hansa-server
   nohup $programa/hansa-server --port porthansaprogram >$programa/nohup.out 2>&1 &
 }
