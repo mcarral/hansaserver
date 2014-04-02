@@ -7,6 +7,15 @@ echo_success(){
 echo_failure(){
   printf "$(tput setaf 1)%155s$(tput sgr0)\n" "[FAILED]"
 }
+countspace(){
+  count=0
+  export IFS=" "
+  for substr in $urlhansa; do
+    count=$(( ${count#0}+1 ))
+  done
+
+  echo "$count"
+}
 
 if [ -f $urlscript/hansaserver ]; then
   rm -rf $urlscript/hansaserver	
@@ -15,22 +24,33 @@ wget -P$urlscript/ https://raw.github.com/matiascarral/hansaserver/master/hansas
 echo $"[...] Waiting \n"
 sleep 10
 if [ -f $urlscript/hansaserver ]; then
-  echo -n $"Ingrese la url donde se encuentra la aplicacion HANSA:\n"
-  echo -n $"Ej: /home/HANSA/ \n"
+  echo -n $"Ingrese la ruta completa donde se encuentra la aplicacion HANSA:\n"
+  echo -n $"Ej: /home/HANSA \n"
   read urlhansa
+  count=$(countspace)
+  while [ ! "$count" -eq "1" ]; do
+    echo -n $"La ruta no puede contener espacios. Ingrese nuevamente:\n"
+    read urlhansa
+    count=$(countspace)
+  done
   while [ ! -d "$urlhansa" ]; do
     echo -n $"El directorio ingresado no existe. Ingrese nuevamente:\n"
     read urlhansa
   done
   namereplace="urlhansaprogram"
-  sed -e 's@'$namereplace'@'$urlhansa'@g' $urlscript/hansaserver > $urlscript/hansaserver2
+  sed -e 's@'"$namereplace"'@'"$urlhansa"'@g' $urlscript/hansaserver > $urlscript/hansaserver2
   mv -f $urlscript/hansaserver2 $urlscript/hansaserver
-  echo -n $"Ingrese un numero de puerto entre 1000 y 3000: \n"
-  read porthansa
-  while [ $(( ${porthansa#0} )) < 1000 && $(( ${porthansa#0} )) > 3000 ]; do
-    echo -n $"Puerto ingresado incorrecto, ingrese un numero de puerto valido:\n"
-    read porthansa
+  echo -n $"Ingrese un numero de puerto: \n"
+  while read porthansa
+  do
+    NUM=$(( ${porthansa#0} ))
+    if [ "$NUM" -lt 1000 ] || [ "$NUM" -gt 3000 ]; then
+      echo $"Puerto incorrecto, desde el 1000 al 3000:"
+    else
+      break
+    fi
   done
+  porthansa=$NUM
   namereplace="porthansaprogram"
   sed -e 's@'$namereplace'@'$porthansa'@g' $urlscript/hansaserver > $urlscript/hansaserver2
   mv -f $urlscript/hansaserver2 $urlscript/hansaserver

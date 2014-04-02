@@ -46,8 +46,13 @@ start(){
    startup
    sleep 10
    PIDHANSA=$(getpid)
-   echo_success
-   echo -n $"Servicio iniciado: $PIDHANSA \n"
+   if [ ${#PIDHANSA} != "0" ]; then
+     echo -n $"Servicio iniciado: $PIDHANSA \n"
+     echo_success
+   else
+     echo -n $"Error, servicio no iniciado, revisar el log nohup.out o hansa.log \n"
+     echo_failure
+   fi
  fi
 }
  
