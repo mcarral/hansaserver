@@ -37,7 +37,7 @@ if [ -f $urlscript/hansaserver ]; then
     echo -n $"El directorio ingresado no existe. Ingrese nuevamente:\n"
     read urlhansa
   done
-  while [ ! -f $urlhansa/hansa-server ]; do
+  while [ ! -f "$urlhansa"/hansa-server ]; do
     echo -n $"No se encuentra el ejecutable hansa-server en $urlhansa/hansa-server \n"
   done
   namereplace="urlhansaprogram"
@@ -58,17 +58,26 @@ if [ -f $urlscript/hansaserver ]; then
   sed -e 's@'$namereplace'@'$porthansa'@g' $urlscript/hansaserver > $urlscript/hansaserver2
   mv -f $urlscript/hansaserver2 $urlscript/hansaserver
   chmod ug+x $urlscript/hansaserver
-  if [ -f /etc/rc5.d/S30hansaserver ]; then
-    ln -s $urlscript/hansaserver /etc/rc5.d/S30hansaserver
+  if [ ! -f /etc/rc0.d/K09hansaserver ]; then
+    ln -s $urlscript/hansaserver /etc/rc0.d/K09hansaserver
   fi
-  if [ -f /etc/rc3.d/S30hansaserver ]; then
-    ln -s $urlscript/hansaserver /etc/rc3.d/S30hansaserver
+  if [ ! -f /etc/rc1.d/K09hansaserver ]; then
+    ln -s $urlscript/hansaserver /etc/rc1.d/K09hansaserver
   fi
-  if [ -f /etc/rc6.d/K05hansaserver ]; then
-    ln -s $urlscript/hansaserver /etc/rc6.d/K05hansaserver
+  if [ ! -f /etc/rc2.d/S91hansaserver ]; then
+    ln -s $urlscript/hansaserver /etc/rc2.d/S91hansaserver
+  fi
+  if [ ! -f /etc/rc3.d/S91hansaserver ]; then
+    ln -s $urlscript/hansaserver /etc/rc3.d/S91hansaserver
   fi  
-  if [ -f /etc/rc0.d/K05hansaserver ]; then
-    ln -s $urlscript/hansaserver /etc/rc0.d/K05hansaserver
+  if [ ! -f /etc/rc4.d/S91hansaserver ]; then
+    ln -s $urlscript/hansaserver /etc/rc4.d/S91hansaserver
+  fi
+  if [ ! -f /etc/rc5.d/S91hansaserver ]; then
+    ln -s $urlscript/hansaserver /etc/rc5.d/S91hansaserver
+  fi
+  if [ ! -f /etc/rc6.d/K09hansaserver ]; then
+    ln -s $urlscript/hansaserver /etc/rc6.d/K09hansaserver
   fi
   service hansaserver start
 else
