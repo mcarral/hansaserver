@@ -23,14 +23,13 @@ startup(){
 }
 
 getpid(){
-  if [ -f "$programa"/hansa.pid ]; then
-    read PID < $programa/hansa.pid
-  else
-    PID=""
-  fi
+  detailpid=`ps --no-heading -C hansa-server -f | grep $programa | xargs | tr ' ' '\n'`
+  PID=`echo "$detailpid" | sed -n 2,2p`
 
   echo "$PID"
 }
+
+
 deletepid(){
  if [ -f "$programa"/hansa.pid ]; then
    rm -rf $programa/hansa.pid
@@ -87,6 +86,56 @@ status(){
  fi
 }
 
+log(){
+ if [ -f $programa/hansa.log ]; then
+   tail -f -n100 $programa/hansa.log
+ else
+   echo $"El archivo log del hansa no existe. Verifique que el servicio este activo y que se tenga permisos de escritura sobre la carpeta $programa \n"
+ fi
+}
+
+backup(){
+ if [ ! -d $programa/Backup ]; then
+   mkdir $programa/Backup
+ fi
+ PIDHANSA=$(getpid)
+ if [ ${#PIDHANSA} != "0" ]; then
+   echo $"El servicio hansaserver esta activo. Desea pararlo?[yes/no]"
+   read confirm
+   while [ $confirm != "yes" -a $confirm != "no"  ]; do
+     echo "\n"
+     echo $"Entrada incorrecta [yes/no] \n"
+     read confirm
+     confirm=${confirm:0:1}
+   done
+   if [ "$confirm" = "n" ]; then
+     exit
+   else
+     stop
+   fi
+ fi
+ nohup $programa/hansa-server --backup >$programa/nohup.out 2>&1 &
+ echo -n "[...]Waiting generating bakup\n"
+ sleep 5
+ PIDHANSA=$(getpid)
+ if [ ${#PIDHANSA} != "0" ]; then
+   while [ ${#PIDHANSA} != "0" ]; do
+     if [ ${#waiting} -gt 2 ]; then
+       waiting=""
+     fi
+     waiting="$waiting."
+     #echo -ne "\r [$waiting]Waiting generating bakup \n"
+     printf "[%b]Waiting generating backup\r" "$waiting"
+     sleep 0.5
+     PIDHANSA=$(getpid)
+   done
+   echo $"\nDone, backup generated.\n"
+   echo_success
+ else
+   echo $"Error al generar backup revise el log, service hansaserver log \n"
+ fi
+}
+
 # Dependiento del parametro que se le pase
 #start - stop - restart ejecuta la funcióorrespondiente.
 #echo "param1 $1 -> param2 $2 -> param3 $3"
@@ -103,8 +152,14 @@ restart)
 status)
  status
  ;;
+log)
+ log
+ ;;
+backup)
+ backup
+ ;;
 *)
- echo $"Usar: $0 {start|stop|restart|status} \n"
+ echo $"Usar: $0 {start|stop|restart|status|log|backup} \n"
  exit 1
 esac
  
