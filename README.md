@@ -15,11 +15,11 @@ Service hansaserver install linux
 ```
 
 * CommandLine example:
-	service hansaserver start
-	service hansaserver stop
-	service hansaserver restart
-	service hansaserver backup
-	service hansaserver reimport
+	- service hansaserver start
+	- service hansaserver stop
+	- service hansaserver restart
+	- service hansaserver backup
+	- service hansaserver reimport
 
 OR
 
