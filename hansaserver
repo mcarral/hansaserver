@@ -46,34 +46,33 @@ deletepid(){
 }
 
 start(){
- echo -n $"[...] Starting hansaserver: \n"
+ printf "[...] Starting hansaserver: \n"
  PIDHANSA=$(getpidhansa)
  PIDRELOADED=$(getpidreloaded)
  if [ ${#PIDRELOADED} != "0" ]; then
    echo_failure
    if ! [ ${#PIDHANSA} != "0" ]; then
-       echo -n $"Error el servicio ya se encuentra pero hansa no se encuentra activo, verifique el log \n"
+       printf "Error el servicio ya se encuentra pero hansa no se encuentra activo, verifique el log \n"
    else
-       echo -n $"Error el servicio ya se encuentra corriendo \n"
+       printf "Error el servicio ya se encuentra corriendo \n"
    fi
  else
    startup
    sleep 10
    PIDRELOADED=$(getpidreloaded)
    PIDHANSA=$(getpidhansa)
-   echo -n $"PID $PIDRELOADED | $PIDHANSA"
    if [ ${#PIDHANSA} != "0" ] && [ ${#PIDRELOADED} != "0" ]; then
-     echo -n $"Servicio iniciado: $PIDHANSA (reloaded: $PIDRELOADED) \n"
+     printf "Servicio iniciado: $PIDHANSA (reloaded: $PIDRELOADED) \n"
      echo_success
    else
-     echo -n $"Error, servicio no iniciado, revisar el log nohup.out o hansa.log \n"
+     printf "Error, servicio no iniciado, revisar el log nohup.out o hansa.log \n"
      echo_failure
    fi
  fi
 }
  
 stop(){
- echo -n $"[...] Stopping hansaserver: \n"
+ printf "[...] Stopping hansaserver: \n"
  PIDHANSA=$(getpidhansa)
  PIDRELOADED=$(getpidreloaded)
  if [ ${#PIDRELOADED} != "0" ]; then
@@ -83,7 +82,7 @@ stop(){
     echo_success
  else
     echo_failure
-    echo -n $"Error hansaserver alredy stopped \n"
+    printf "Error hansaserver alredy stopped \n"
  fi
 }
  
@@ -98,10 +97,10 @@ status(){
  PIDRELOADED=$(getpidreloaded)
  if [ ${#PIDRELOADED} != "0" ] || [ ${#PIDHANSA} != "0" ]; then
    echo_success
-   echo $"hansaserver is running (pid $PIDHANSA | pid $PIDRELOADED)";
+   printf "hansaserver is running (pid $PIDHANSA | pid $PIDRELOADED)";
  else
    echo_failure
-   echo $"hansaserver is NOT running"
+   printf "hansaserver is NOT running"
  fi
 }
 
@@ -109,7 +108,7 @@ log(){
  if [ -f $programa/hansa.log ]; then
    tail -f -n100 $programa/hansa.log
  else
-   echo $"El archivo log del hansa no existe. Verifique que el servicio este activo y que se tenga permisos de escritura sobre la carpeta $programa \n"
+   printf "El archivo log del hansa no existe. Verifique que el servicio este activo y que se tenga permisos de escritura sobre la carpeta $programa \n"
  fi
 }
 
@@ -119,11 +118,11 @@ backup(){
  fi
  PIDHANSA=$(getpidhansa)
  if [ ${#PIDHANSA} != "0" ]; then
-   echo $"El servicio hansaserver esta activo. Desea pararlo?[yes/no]"
+   printf "El servicio hansaserver esta activo. Desea pararlo?[yes/no]"
    read confirm
    while [ $confirm != "yes" -a $confirm != "no"  ]; do
-     echo "\n"
-     echo $"Entrada incorrecta [yes/no] \n"
+     printf "\n"
+     printf "Entrada incorrecta [yes/no] \n"
      read confirm
      confirm=${confirm:0:1}
    done
@@ -134,7 +133,7 @@ backup(){
    fi
  fi
  nohup $programa/hansa-server --port porthansaprogram --backup >$programa/nohup.out 2>&1 &
- echo -n "[...]Waiting generating bakup\n"
+ echo -e "[...]Waiting generating bakup\n"
  sleep 2
  PIDHANSA=$(getpidhansa)
  if [ ${#PIDHANSA} != "0" ]; then
@@ -143,15 +142,15 @@ backup(){
        waiting=""
      fi
      waiting="$waiting."
-     #echo -ne "\r [$waiting]Waiting generating bakup \n"
+     #echo -e "\r [$waiting]Waiting generating bakup \n"
      printf "[%b]Waiting generating backup\r" "$waiting"
      sleep 0.5
      PIDHANSA=$(getpidhansa)
    done
-   echo $"\nDone, backup generated.\n"
+   printf "\nDone, backup generated.\n"
    echo_success
  else
-   echo $"Error al generar backup revise el log, service hansaserver log \n"
+   printf "Error al generar backup revise el log, service hansaserver log \n"
  fi
 }
 
@@ -178,7 +177,7 @@ backup)
  backup
  ;;
 *)
- echo $"Usar: $0 {start|stop|restart|status|log|backup} \n"
+ printf "Usar: $0 {start|stop|restart|status|log|backup} \n"
  exit 1
 esac
  
