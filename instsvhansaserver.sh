@@ -79,7 +79,7 @@ fi
 
 # Download service template
 touch "${urlscript}/${servicename}"
-wget https://raw.github.com/matiascarral/hansaserver/master/hansaserver -O "${urlscript}/${servicename}" 
+wget --no-check-certificate https://raw.github.com/matiascarral/hansaserver/master/hansaserver -O "${urlscript}/${servicename}" 
 echo -e $"[...] Waiting"
 sleep 10
 
